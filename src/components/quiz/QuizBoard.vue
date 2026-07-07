@@ -8,13 +8,11 @@ import {
 } from "../../utils/audio.js";
 
 onMounted(() => {
-  preloadKanaSounds(kanaData.map((item) => item.romaji));
+  const firstRomaji = quizQuestions.value[0]?.romaji;
 
-  // 手機瀏覽器暖機用：讓 Audio 先準備好
-  const warmup = new Audio();
-  warmup.src = `${import.meta.env.BASE_URL}audio/kana/a.wav`;
-  warmup.preload = "auto";
-  warmup.load();
+  if (firstRomaji) {
+    preloadKanaSounds([firstRomaji]);
+  }
 });
 
 

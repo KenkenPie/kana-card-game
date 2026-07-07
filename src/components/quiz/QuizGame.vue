@@ -2,12 +2,24 @@
 import { ref } from "vue";
 import StageSelect from "./StageSelect.vue";
 import QuizBoard from "./QuizBoard.vue";
+import { preloadKanaSounds } from "../../utils/audio.js";
+import { kanaData } from "../../data/kanaData.js";
+
+
 
 const gameState = ref("select");
 const selectedStage = ref(null);
 const gameKey = ref(0);
 
-function startGame(stage) {
+
+async function startGame(stage) {
+  // 先預載所有音效
+  preloadKanaSounds(kanaData.map((item) => item.romaji));
+
+  // 給瀏覽器一點時間開始載入音效（約 300ms）
+  await new Promise((resolve) => setTimeout(resolve, 300));
+
+  // 再開始遊戲
   selectedStage.value = stage;
   gameState.value = "playing";
 }
