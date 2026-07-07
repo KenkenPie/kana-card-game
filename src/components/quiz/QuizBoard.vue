@@ -288,7 +288,7 @@ function goNextQuestion() {
       <!-- ==============================
            全部答對時的提示
       ============================== -->
-      <div v-else class="perfect-review">真棒，沒有錯題需要複習♥</div>
+      <div v-else class="perfect-review">真棒!沒有錯題需要複習♥</div>
 
       <!-- ==============================
            結算按鈕
