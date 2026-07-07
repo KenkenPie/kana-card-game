@@ -1,8 +1,15 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { kanaData } from "../../data/kanaData.js";
 import KanaCard from "./KanaCard.vue";
-import { playKanaSound } from "../../utils/audio.js";
+import {
+  playKanaSound,
+  preloadKanaSounds,
+} from "../../utils/audio.js";
+
+onMounted(() => {
+  preloadKanaSounds(kanaData.map((item) => item.romaji));
+});
 
 // ==============================
 // 接收 QuizGame 傳入的關卡資料
