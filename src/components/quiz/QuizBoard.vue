@@ -2,7 +2,7 @@
 import { ref, computed } from "vue";
 import { kanaData } from "../../data/kanaData.js";
 import KanaCard from "./KanaCard.vue";
-import { playKanaSound } from "../../utils/audio";
+import { playKanaSound } from "../../utils/audio.js";
 
 // ==============================
 // 接收 QuizGame 傳入的關卡資料
@@ -288,7 +288,7 @@ function goNextQuestion() {
       <!-- ==============================
            全部答對時的提示
       ============================== -->
-      <div v-else class="perfect-review">真棒!沒有錯題需要複習♥</div>
+      <div v-else class="perfect-review">真棒! 沒有錯題需要複習♥</div>
 
       <!-- ==============================
            結算按鈕

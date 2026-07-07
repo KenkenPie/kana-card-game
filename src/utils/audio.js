@@ -4,7 +4,11 @@
 export function playKanaSound(romaji) {
   if (!romaji) return;
 
-  const audio = new Audio(`/audio/kana/${romaji}.wav`);
+  const url = `${import.meta.env.BASE_URL}audio/kana/${romaji}.wav`;
+
+  // console.log(url); // 可以先留著測試
+
+  const audio = new Audio(url);
 
   audio.currentTime = 0;
   audio.play().catch((error) => {

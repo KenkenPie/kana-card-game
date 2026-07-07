@@ -1,5 +1,5 @@
 <script setup>
-import { playKanaSound } from "../../utils/audio";
+import { playKanaSound } from "../../utils/audio.js";
 
 // ==============================
 // 接收 QuizBoard 傳入的資料
