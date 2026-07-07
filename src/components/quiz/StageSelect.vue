@@ -1,4 +1,8 @@
 <script setup>
+
+import { preloadKanaSounds } from "../../utils/audio.js";
+import { kanaData } from "../../data/kanaData.js";
+
 const emit = defineEmits(["start"]);
 
 const stages = [
@@ -20,7 +24,11 @@ const stages = [
 ];
 
 function chooseStage(stage) {
-  emit("start", stage);
+  preloadKanaSounds(kanaData.map((item) => item.romaji));
+
+  setTimeout(() => {
+    emit("start", stage);
+  }, 300);
 }
 </script>
 

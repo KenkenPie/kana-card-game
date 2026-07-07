@@ -9,7 +9,14 @@ import {
 
 onMounted(() => {
   preloadKanaSounds(kanaData.map((item) => item.romaji));
+
+  // 手機瀏覽器暖機用：讓 Audio 先準備好
+  const warmup = new Audio();
+  warmup.src = `${import.meta.env.BASE_URL}audio/kana/a.wav`;
+  warmup.preload = "auto";
+  warmup.load();
 });
+
 
 // ==============================
 // 接收 QuizGame 傳入的關卡資料
