@@ -120,7 +120,6 @@ function getOptionClass(option) {
     </div>
   </section>
 </template>
-
 <style scoped>
 .vocab-card {
   width: min(100%, 420px);
@@ -139,7 +138,7 @@ function getOptionClass(option) {
 }
 
 /* ==============================
-   單字顯示
+   單字顯示區
 ============================== */
 .word-display {
   min-height: 150px;
@@ -210,25 +209,31 @@ function getOptionClass(option) {
 
   transition:
     background 0.2s,
+    color 0.2s,
     transform 0.2s;
 
   overflow-wrap: anywhere;
 
-  /* 移除手機點擊殘留色 */
   outline: none;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 
-/* 避免 iPhone / 手機瀏覽器保留上一題點擊狀態 */
+/* ==============================
+   預設 focus / active
+   避免手機點擊後殘留奇怪底色
+============================== */
 .option-btn:focus,
 .option-btn:focus-visible,
 .option-btn:active {
   outline: none;
   background: #f3eadc;
+  color: #5f4b3b;
 }
 
-/* 只有支援滑鼠 hover 的裝置才套用 hover */
+/* ==============================
+   只有支援滑鼠 hover 的裝置才套用
+============================== */
 @media (hover: hover) {
   .option-btn:not(.answered):hover {
     transform: translateY(-2px);
@@ -236,23 +241,43 @@ function getOptionClass(option) {
   }
 }
 
-/* 答對 */
-.option-btn.is-correct {
+/* ==============================
+   答對
+   即使按鈕仍在 focus / active 狀態
+   也維持綠色
+============================== */
+.option-btn.is-correct,
+.option-btn.is-correct:focus,
+.option-btn.is-correct:focus-visible,
+.option-btn.is-correct:active {
   background: #b9dfc3;
   color: #2f5d3a;
 }
 
-/* 答錯 */
-.option-btn.is-wrong {
+/* ==============================
+   答錯
+   即使按鈕仍在 focus / active 狀態
+   也維持紅色
+============================== */
+.option-btn.is-wrong,
+.option-btn.is-wrong:focus,
+.option-btn.is-wrong:focus-visible,
+.option-btn.is-wrong:active {
   background: #f2b8b5;
   color: #7a2e2a;
 }
 
-/* 已作答後，不讓 active / focus 蓋掉正確錯誤顏色 */
-.option-btn.answered:focus,
-.option-btn.answered:focus-visible,
-.option-btn.answered:active {
-  background: inherit;
+/* ==============================
+   已作答後不再允許 hover 位移
+============================== */
+.option-btn.answered {
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .option-btn.answered:hover {
+    transform: none;
+  }
 }
 
 /* ==============================
@@ -284,6 +309,7 @@ function getOptionClass(option) {
   .option-btn {
     min-height: 56px;
     padding: 13px 12px;
+
     font-size: 18px;
   }
 }
