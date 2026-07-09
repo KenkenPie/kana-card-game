@@ -181,7 +181,7 @@ const resultStars = computed(() => {
 function handleAnswer(result) {
   if (isAnswered.value) return;
 
-  playVocabSound(currentQuestion.value, selectedLevel.value);
+  playCurrentQuestionSound();
 
   selectedAnswer.value = result.selected;
   isAnswered.value = true;
@@ -221,6 +221,10 @@ function goNextQuestion() {
   } else {
     isFinished.value = true;
   }
+}
+
+function playCurrentQuestionSound() {
+  playVocabSound(currentQuestion.value, selectedLevel.value);
 }
 
 function preloadNearbyVocabSounds() {
@@ -281,6 +285,7 @@ watch(currentIndex, () => {
           :isAnswered="isAnswered"
           :correctAnswer="currentQuestion.meaning"
           @answer="handleAnswer"
+          @play-sound="playCurrentQuestionSound"
         />
       </Transition>
 

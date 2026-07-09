@@ -44,7 +44,7 @@ const props = defineProps({
 // ==============================
 // 傳送事件給 VocabBoard
 // ==============================
-const emit = defineEmits(["answer"]);
+const emit = defineEmits(["answer", "play-sound"]);
 
 // ==============================
 // 玩家點擊中文選項
@@ -59,6 +59,10 @@ function chooseAnswer(option) {
     correctAnswer: props.correctAnswer,
     isCorrect,
   });
+}
+
+function playCurrentSound() {
+  emit("play-sound");
 }
 
 // ==============================
@@ -90,6 +94,15 @@ const kanaSizeClass = computed(() => {
 
 <template>
   <section class="vocab-card">
+    <button
+      type="button"
+      class="sound-button"
+      aria-label="播放單字發音"
+      @click.stop="playCurrentSound"
+    >
+      🔊
+    </button>
+
     <!-- ==============================
          題目區
          作答前只顯示假名
@@ -133,6 +146,8 @@ const kanaSizeClass = computed(() => {
 </template>
 <style scoped>
 .vocab-card {
+  position: relative;
+
   width: min(100%, 440px);
   margin: 0 auto;
   padding: 28px;
@@ -146,6 +161,57 @@ const kanaSizeClass = computed(() => {
   box-shadow: 0 12px 30px rgba(120, 90, 60, 0.12);
 
   text-align: center;
+}
+
+.sound-button {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+
+  width: 40px;
+  height: 40px;
+  padding: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid #eadfce;
+  border-radius: 999px;
+
+  background: #fffaf1;
+  color: #5f4b3b;
+
+  font-size: 19px;
+  line-height: 1;
+
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(120, 90, 60, 0.1);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease,
+    background 0.16s ease;
+
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.sound-button:hover {
+  transform: scale(1.06);
+  background: #fff7ea;
+  box-shadow: 0 10px 20px rgba(120, 90, 60, 0.16);
+}
+
+.sound-button:active {
+  transform: scale(0.96);
+  box-shadow: 0 4px 10px rgba(120, 90, 60, 0.12);
+}
+
+.sound-button:focus-visible {
+  box-shadow:
+    0 0 0 3px rgba(143, 157, 131, 0.25),
+    0 6px 14px rgba(120, 90, 60, 0.1);
 }
 
 /* ==============================
@@ -308,6 +374,14 @@ const kanaSizeClass = computed(() => {
   .vocab-card {
     padding: 22px;
     border-radius: 24px;
+  }
+
+  .sound-button {
+    top: 14px;
+    right: 14px;
+
+    width: 42px;
+    height: 42px;
   }
 
   .word-display {
