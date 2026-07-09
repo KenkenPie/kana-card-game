@@ -2,8 +2,11 @@
 import { ref } from "vue";
 import QuizGame from "./components/quiz/QuizGame.vue";
 import VocabGame from "./components/vocab/VocabGame.vue";
+import DailyProverbCard from "./components/DailyProverbCard.vue";
+import { getDailyProverb } from "./utils/getDailyProverb.js";
 
 const currentPage = ref("home");
+const dailyProverb = getDailyProverb();
 
 function openGame(game) {
   currentPage.value = game;
@@ -41,6 +44,8 @@ function backToHome() {
             <p>看假名，選出正確的中文意思</p>
           </button>
         </div>
+
+        <DailyProverbCard :proverb="dailyProverb" />
       </section>
     </div>
   </main>
@@ -142,6 +147,8 @@ function backToHome() {
   display: grid;
   grid-template-columns: 1fr;
   gap: 18px;
+
+  margin-bottom: 28px;
 }
 
 .game-card {
@@ -195,6 +202,20 @@ function backToHome() {
     width: 100%;
     min-height: 100dvh;
     border-radius: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .home-screen {
+    padding: 20px;
+  }
+
+  .home-screen h1 {
+    font-size: 38px;
+  }
+
+  .subtitle {
+    margin-bottom: 28px;
   }
 }
 </style>
