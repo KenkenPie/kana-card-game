@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-  "audio:kana": "node scripts/generate-voicevox-audio.mjs"
+    "audio:kana": "node scripts/generate-voicevox-audio.mjs kana",
+    "audio:vocab": "node scripts/generate-voicevox-audio.mjs vocab"
   },
   "dependencies": {
     "vue": "^3.5.39"

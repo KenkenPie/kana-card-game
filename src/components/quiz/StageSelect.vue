@@ -1,9 +1,5 @@
 <script setup>
-
-import { preloadKanaSounds } from "../../utils/audio.js";
-import { kanaData } from "../../data/kanaData.js";
-
-const emit = defineEmits(["start"]);
+const emit = defineEmits(["start", "back"]);
 
 const stages = [
   {
@@ -24,11 +20,7 @@ const stages = [
 ];
 
 function chooseStage(stage) {
-  preloadKanaSounds(kanaData.map((item) => item.romaji));
-
-  setTimeout(() => {
-    emit("start", stage);
-  }, 300);
+  emit("start", stage);
 }
 </script>
 
@@ -48,6 +40,14 @@ function chooseStage(stage) {
         <p>{{ stage.desc }}</p>
       </button>
     </div>
+
+    <button
+      type="button"
+      class="back-button"
+      @click="emit('back')"
+    >
+      ← 回遊戲首頁
+    </button>
   </section>
 </template>
 
@@ -126,6 +126,28 @@ function chooseStage(stage) {
   font-size: 15px;
   line-height: 1.6;
   color: #7d6d5f;
+}
+
+.back-button {
+  margin: 28px auto 0;
+  padding: 11px 20px;
+
+  border: none;
+  border-radius: 999px;
+
+  background: transparent;
+  color: #8a7766;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.back-button:hover {
+  background: rgba(255, 253, 248, 0.7);
+  color: #5f4b3b;
 }
 
 </style>

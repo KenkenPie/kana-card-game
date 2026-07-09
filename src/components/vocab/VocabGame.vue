@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import VocabStageSelect from "./VocabStageSelect.vue";
 import VocabBoard from "./VocabBoard.vue";
+import { unlockAudio } from "../../utils/audio.js";
 
 // ==============================
 // 傳送返回事件給 App.vue
@@ -32,6 +33,7 @@ const gameKey = ref(0);
 // 開始單字遊戲
 // ==============================
 function startGame(stage) {
+  unlockAudio();
   selectedStage.value = stage;
   gameState.value = "playing";
 }
@@ -80,6 +82,7 @@ function backToHome() {
         :stage="selectedStage"
         @restart="restartGame"
         @back="backToStageSelect"
+        @home="backToHome"
       />
     </div>
   </main>

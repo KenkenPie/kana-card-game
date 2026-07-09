@@ -1,14 +1,29 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { n5Words } from "../../data/n5Words.js";
+import n4Words from "../../data/n4Words.js";
 import VocabCard from "./VocabCard.vue";
+import {
+  playVocabSound,
+  preloadVocabSounds,
+} from "../../utils/audio.js";
 
 // ==============================
 // 傳送事件給 VocabGame
 // restart：重新開始
 // back：返回首頁或遊戲選擇畫面
 // ==============================
-const emit = defineEmits(["restart", "back"]);
+const emit = defineEmits(["restart", "back", "home"]);
+
+const props = defineProps({
+  stage: {
+    type: Object,
+    default: () => ({
+      id: "n5-basic",
+      level: "N5",
+    }),
+  },
+});
 
 // ==============================
 // 遊戲基本設定
@@ -23,6 +38,21 @@ const QUESTION_COUNT = 10;
 function shuffle(array) {
   return [...array].sort(() => Math.random() - 0.5);
 }
+
+const vocabDataByLevel = {
+  N5: n5Words,
+  N4: n4Words,
+};
+
+const selectedLevel = computed(() => {
+  if (props.stage?.level) return props.stage.level;
+  if (props.stage?.id?.startsWith("n4")) return "N4";
+  return "N5";
+});
+
+const vocabWords = computed(() => {
+  return vocabDataByLevel[selectedLevel.value] ?? n5Words;
+});
 
 // ==============================
 // 題目與分數狀態
@@ -47,10 +77,10 @@ const wrongQuestions = ref([]);
 
 // ==============================
 // 建立本輪題目
-// 從 n5Words 隨機抽出指定題數
+// 從目前選擇的等級題庫隨機抽出指定題數
 // ==============================
 const quizQuestions = ref(
-  shuffle(n5Words).slice(0, QUESTION_COUNT),
+  shuffle(vocabWords.value).slice(0, QUESTION_COUNT),
 );
 
 // ==============================
@@ -71,7 +101,7 @@ const currentQuestion = computed(() => {
 const currentOptions = computed(() => {
   const correctAnswer = currentQuestion.value.meaning;
 
-  const wrongMeanings = n5Words
+  const wrongMeanings = vocabWords.value
     .filter((item) => {
       return (
         item.id !== currentQuestion.value.id &&
@@ -115,7 +145,7 @@ const accuracy = computed(() => {
 // ==============================
 const resultMessage = computed(() => {
   if (accuracy.value === 100) {
-    return "完美！N5 單字全都記住了 🌸";
+    return `完美！${selectedLevel.value} 單字全都記住了 🌸`;
   }
 
   if (accuracy.value >= 80) {
@@ -150,6 +180,8 @@ const resultStars = computed(() => {
 // ==============================
 function handleAnswer(result) {
   if (isAnswered.value) return;
+
+  playVocabSound(currentQuestion.value, selectedLevel.value);
 
   selectedAnswer.value = result.selected;
   isAnswered.value = true;
@@ -190,6 +222,24 @@ function goNextQuestion() {
     isFinished.value = true;
   }
 }
+
+function preloadNearbyVocabSounds() {
+  preloadVocabSounds(
+    [
+      quizQuestions.value[currentIndex.value],
+      quizQuestions.value[currentIndex.value + 1],
+    ],
+    selectedLevel.value,
+  );
+}
+
+onMounted(() => {
+  preloadNearbyVocabSounds();
+});
+
+watch(currentIndex, () => {
+  preloadNearbyVocabSounds();
+});
 </script>
 
 <template>
@@ -237,6 +287,14 @@ function goNextQuestion() {
       <p class="message" :class="{ show: message }">
         {{ message }}
       </p>
+
+      <button
+        type="button"
+        class="home-button"
+        @click="emit('home')"
+      >
+        ← 回遊戲首頁
+      </button>
     </div>
 
     <!-- ==============================
@@ -334,6 +392,10 @@ function goNextQuestion() {
         </button>
 
         <button type="button" @click="emit('back')">
+          回選關
+        </button>
+
+        <button type="button" @click="emit('home')">
           回首頁
         </button>
       </div>
@@ -452,6 +514,30 @@ function goNextQuestion() {
 .message.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+.home-button {
+  margin: 0 auto;
+  padding: 11px 20px;
+
+  display: block;
+
+  border: none;
+  border-radius: 999px;
+
+  background: transparent;
+  color: #8a7766;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.home-button:hover {
+  background: rgba(255, 253, 248, 0.7);
+  color: #5f4b3b;
 }
 
 /* ==============================

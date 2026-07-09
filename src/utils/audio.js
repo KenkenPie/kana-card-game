@@ -1,56 +1,104 @@
 // src/utils/audio.js
-// 統一管理五十音發音
+// 統一管理遊戲音檔的預載、快取與播放
 
 const audioCache = {};
 let currentAudio = null;
+let audioContext = null;
+let isUnlocked = false;
 
-// 預載指定的音檔
-export function preloadKanaSounds(romajiList = []) {
-  romajiList.forEach((romaji) => {
-    if (!romaji || audioCache[romaji]) return;
+function getAudio(url) {
+  if (!url) return null;
 
-    const url = `${import.meta.env.BASE_URL}audio/kana/${romaji}.wav`;
-
+  if (!audioCache[url]) {
     const audio = new Audio(url);
     audio.preload = "auto";
-    // 不主動 audio.load()
-    // 避免第一次進遊戲時瀏覽器忙著載入，造成第一題 lag
+    audioCache[url] = audio;
+  }
 
-    audioCache[romaji] = audio;
+  return audioCache[url];
+}
 
-    console.log("預載音檔：", url);
+function loadAudio(url) {
+  const audio = getAudio(url);
+
+  if (!audio) return;
+
+  try {
+    audio.load();
+  } catch (error) {
+    console.warn("音檔預載失敗：", url, error);
+  }
+}
+
+function preloadAudioUrls(urls = []) {
+  urls.forEach((url) => {
+    if (!url) return;
+    loadAudio(url);
   });
 }
 
-// 播放指定假名音檔
-export function playKanaSound(romaji) {
-  if (!romaji) {
-    console.warn("沒有收到 romaji");
-    return;
-  }
+function playAudioUrl(url) {
+  const audio = getAudio(url);
 
-  const url = `${import.meta.env.BASE_URL}audio/kana/${romaji}.wav`;
+  if (!audio) return;
 
-  if (!audioCache[romaji]) {
-    const audio = new Audio(url);
-    audio.preload = "auto";
-    // 不主動 audio.load()
-
-    audioCache[romaji] = audio;
-  }
-
-  if (currentAudio) {
+  if (currentAudio && currentAudio !== audio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   }
 
-  const audio = audioCache[romaji];
   currentAudio = audio;
+  audio.pause();
   audio.currentTime = 0;
 
-  console.log("播放音檔：", url);
-
   audio.play().catch((error) => {
-    console.warn("音檔播放失敗：", romaji, error);
+    console.warn("音檔播放失敗：", url, error);
   });
+}
+
+export function unlockAudio() {
+  if (isUnlocked) return;
+
+  const AudioContextClass =
+    window.AudioContext || window.webkitAudioContext;
+
+  if (AudioContextClass) {
+    if (!audioContext) {
+      audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume().catch(() => {});
+    }
+  }
+
+  isUnlocked = true;
+}
+
+export function getKanaAudioUrl(romaji) {
+  if (!romaji) return "";
+  return `${import.meta.env.BASE_URL}audio/kana/${romaji}.wav`;
+}
+
+export function getVocabAudioUrl(level, id) {
+  if (!level || !id) return "";
+  return `${import.meta.env.BASE_URL}audio/${level.toLowerCase()}/${id}.mp3`;
+}
+
+export function preloadKanaSounds(romajiList = []) {
+  preloadAudioUrls(romajiList.map((romaji) => getKanaAudioUrl(romaji)));
+}
+
+export function preloadVocabSounds(items = [], level = "N5") {
+  preloadAudioUrls(
+    items.map((item) => getVocabAudioUrl(level, item?.id)),
+  );
+}
+
+export function playKanaSound(romaji) {
+  playAudioUrl(getKanaAudioUrl(romaji));
+}
+
+export function playVocabSound(item, level = "N5") {
+  playAudioUrl(getVocabAudioUrl(level, item?.id));
 }

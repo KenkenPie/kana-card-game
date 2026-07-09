@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from "vue";
+
 // ==============================
 // 接收 VocabBoard 傳入的資料
 // ==============================
@@ -75,6 +77,15 @@ function getOptionClass(option) {
 
   return "";
 }
+
+const kanaSizeClass = computed(() => {
+  const kanaLength = Array.from(props.kana).length;
+
+  if (kanaLength >= 8) return "is-extra-long";
+  if (kanaLength >= 6) return "is-long";
+
+  return "";
+});
 </script>
 
 <template>
@@ -85,7 +96,7 @@ function getOptionClass(option) {
          作答後顯示假名、漢字、中文
     ============================== -->
     <div class="word-display">
-      <div class="word-kana">
+      <div :class="['word-kana', kanaSizeClass]">
         {{ kana }}
       </div>
 
@@ -122,7 +133,7 @@ function getOptionClass(option) {
 </template>
 <style scoped>
 .vocab-card {
-  width: min(100%, 420px);
+  width: min(100%, 440px);
   margin: 0 auto;
   padding: 28px;
 
@@ -151,12 +162,22 @@ function getOptionClass(option) {
 }
 
 .word-kana {
+  max-width: 100%;
+
   color: #5f4b3b;
   font-size: 62px;
   font-weight: 700;
   line-height: 1.2;
 
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+
+.word-kana.is-long {
+  font-size: 52px;
+}
+
+.word-kana.is-extra-long {
+  font-size: 44px;
 }
 
 .answer-detail {
@@ -296,6 +317,14 @@ function getOptionClass(option) {
 
   .word-kana {
     font-size: 48px;
+  }
+
+  .word-kana.is-long {
+    font-size: 41px;
+  }
+
+  .word-kana.is-extra-long {
+    font-size: 34px;
   }
 
   .word-kanji {

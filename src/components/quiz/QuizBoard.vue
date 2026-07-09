@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { kanaData } from "../../data/kanaData.js";
 import KanaCard from "./KanaCard.vue";
 import {
@@ -8,11 +8,7 @@ import {
 } from "../../utils/audio.js";
 
 onMounted(() => {
-  const firstRomaji = quizQuestions.value[0]?.romaji;
-
-  if (firstRomaji) {
-    preloadKanaSounds([firstRomaji]);
-  }
+  preloadNearbyKanaSounds();
 });
 
 
@@ -28,7 +24,7 @@ const props = defineProps({
 
 // 傳送事件給 QuizGame
 // ==============================
-const emit = defineEmits(["restart", "back"]);
+const emit = defineEmits(["restart", "back", "home"]);
 
 // ==============================
 // 遊戲基本設定
@@ -143,6 +139,8 @@ const resultStars = computed(() => {
 function handleAnswer(result) {
   if (isAnswered.value) return;
 
+  playKanaSound(currentQuestion.value.romaji);
+
   selectedAnswer.value = result.selected;
   isAnswered.value = true;
 
@@ -188,6 +186,20 @@ function goNextQuestion() {
     isFinished.value = true;
   }
 }
+
+function preloadNearbyKanaSounds() {
+  const current = quizQuestions.value[currentIndex.value];
+  const next = quizQuestions.value[currentIndex.value + 1];
+
+  preloadKanaSounds([
+    current?.romaji,
+    next?.romaji,
+  ]);
+}
+
+watch(currentIndex, () => {
+  preloadNearbyKanaSounds();
+});
 </script>
 
 <template>
@@ -231,6 +243,14 @@ function goNextQuestion() {
       <p class="message" :class="{ show: message }">
         {{ message }}
       </p>
+
+      <button
+        type="button"
+        class="home-button"
+        @click="emit('home')"
+      >
+        ← 回遊戲首頁
+      </button>
     </div>
 
     <!-- ==============================
@@ -308,6 +328,7 @@ function goNextQuestion() {
       <div class="result-buttons">
         <button @click="emit('restart')">再玩一次</button>
         <button @click="emit('back')">回選關</button>
+        <button @click="emit('home')">回首頁</button>
       </div>
     </div>
   </section>
@@ -424,6 +445,30 @@ function goNextQuestion() {
 .message.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+.home-button {
+  margin: 0 auto;
+  padding: 11px 20px;
+
+  display: block;
+
+  border: none;
+  border-radius: 999px;
+
+  background: transparent;
+  color: #8a7766;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.home-button:hover {
+  background: rgba(255, 253, 248, 0.7);
+  color: #5f4b3b;
 }
 
 /* ==============================

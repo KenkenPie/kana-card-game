@@ -8,7 +8,7 @@
 const emit = defineEmits(["start", "back"]);
 
 // ==============================
-// 目前單字遊戲只有一個模式
+// 目前單字遊戲依 JLPT 等級選擇題庫
 //
 // 之後可以再新增：
 // 中文選日文
@@ -18,7 +18,14 @@ const emit = defineEmits(["start", "back"]);
 const stages = [
   {
     id: "n5-basic",
+    level: "N5",
     title: "N5 基礎單字",
+    desc: "看假名，選出正確的中文意思",
+  },
+  {
+    id: "n4-basic",
+    level: "N4",
+    title: "N4 基礎單字",
     desc: "看假名，選出正確的中文意思",
   },
 ];
@@ -37,7 +44,7 @@ function chooseStage(stage) {
          標題
     ============================== -->
     <div class="stage-header">
-      <h1>N5 Vocabulary</h1>
+      <h1>Vocabulary</h1>
       <p class="subtitle">選擇單字練習模式</p>
     </div>
 

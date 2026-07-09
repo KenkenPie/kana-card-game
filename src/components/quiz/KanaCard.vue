@@ -1,6 +1,4 @@
 <script setup>
-import { playKanaSound } from "../../utils/audio.js";
-
 // ==============================
 // 接收 QuizBoard 傳入的資料
 // ==============================
@@ -43,14 +41,9 @@ const emit = defineEmits(["answer"]);
 
 // ==============================
 // 玩家點擊選項
-// 不論玩家是否答對，都播放目前題目的正確發音
-// 幫助玩家立即建立假名與發音的連結
 // ==============================
 function chooseAnswer(option) {
   if (props.isAnswered) return;
-
-  // 不管玩家點哪個答案，都播放正確答案的發音
-  playKanaSound(props.romaji);
 
   const isCorrect = option === props.romaji;
 
