@@ -23,13 +23,11 @@ const props = defineProps({
       level: "N5",
     }),
   },
+  questionCount: {
+    type: Number,
+    default: 10,
+  },
 });
-
-// ==============================
-// 遊戲基本設定
-// 每一輪隨機抽出 10 題
-// ==============================
-const QUESTION_COUNT = 10;
 
 // ==============================
 // 洗牌函式
@@ -80,7 +78,10 @@ const wrongQuestions = ref([]);
 // 從目前選擇的等級題庫隨機抽出指定題數
 // ==============================
 const quizQuestions = ref(
-  shuffle(vocabWords.value).slice(0, QUESTION_COUNT),
+  shuffle(vocabWords.value).slice(
+    0,
+    Math.min(props.questionCount, vocabWords.value.length),
+  ),
 );
 
 // ==============================
@@ -132,39 +133,45 @@ const progressPercent = computed(() => {
 // 正確率
 // 結算畫面使用
 // ==============================
-const accuracy = computed(() => {
+const accuracyRate = computed(() => {
   if (quizQuestions.value.length === 0) return 0;
 
-  return Math.round(
-    (correctCount.value / quizQuestions.value.length) * 100,
-  );
+  return (correctCount.value / quizQuestions.value.length) * 100;
+});
+
+const accuracy = computed(() => {
+  return Math.round(accuracyRate.value);
 });
 
 // ==============================
 // 結算評語
 // ==============================
 const resultMessage = computed(() => {
-  if (accuracy.value === 100) {
-    return `完美！${selectedLevel.value} 單字全都記住了 🌸`;
+  if (accuracyRate.value === 100) {
+    return "太厲害了！全部答對 🎉";
   }
 
-  if (accuracy.value >= 80) {
+  if (accuracyRate.value >= 80) {
     return "很棒！常用單字已經很熟了 ✨";
   }
 
-  if (accuracy.value >= 60) {
-    return "不錯！再複習幾次會更穩 💪";
+  if (accuracyRate.value >= 60) {
+    return "表現不錯，再複習一下就更穩了 🌱";
   }
 
-  return "慢慢來，單字就是要反覆練習！";
+  if (accuracyRate.value >= 40) {
+    return "已經掌握一部分了，繼續加油 💪";
+  }
+
+  return "沒關係，從錯題慢慢複習吧 📖";
 });
 
 // ==============================
 // 結算星等
 // ==============================
 const resultStars = computed(() => {
-  if (accuracy.value === 100) return "⭐⭐⭐";
-  if (accuracy.value >= 70) return "⭐⭐";
+  if (accuracyRate.value === 100) return "⭐⭐⭐";
+  if (accuracyRate.value >= 70) return "⭐⭐";
   return "⭐";
 });
 
@@ -195,6 +202,7 @@ function handleAnswer(result) {
 
     wrongQuestions.value.push({
       id: currentQuestion.value.id,
+      level: selectedLevel.value,
       kana: currentQuestion.value.kana,
       kanji: currentQuestion.value.kanji,
       meaning: currentQuestion.value.meaning,
@@ -225,6 +233,10 @@ function goNextQuestion() {
 
 function playCurrentQuestionSound() {
   playVocabSound(currentQuestion.value, selectedLevel.value);
+}
+
+function playReviewSound(item) {
+  playVocabSound(item, item.level ?? selectedLevel.value);
 }
 
 function preloadNearbyVocabSounds() {
@@ -358,11 +370,18 @@ watch(currentIndex, () => {
         <h3>錯題複習</h3>
 
         <div class="review-grid">
-          <div
+          <button
             v-for="item in wrongQuestions"
             :key="item.id"
+            type="button"
             class="review-card"
+            :aria-label="`播放 ${item.kana} 的發音`"
+            @click.stop="playReviewSound(item)"
           >
+            <span class="review-sound-icon" aria-hidden="true">
+              🔊
+            </span>
+
             <div class="review-kana">
               {{ item.kana }}
             </div>
@@ -377,7 +396,7 @@ watch(currentIndex, () => {
             <div class="review-meaning">
               {{ item.meaning }}
             </div>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -650,14 +669,50 @@ watch(currentIndex, () => {
 }
 
 .review-card {
+  position: relative;
+
   min-width: 0;
   padding: 12px 10px;
 
+  appearance: none;
   background: #fffdf8;
   border: 2px solid #eadfce;
   border-radius: 14px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
 
   box-shadow: 0 6px 14px rgba(120, 90, 60, 0.08);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(120, 90, 60, 0.12);
+}
+
+.review-card:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(120, 90, 60, 0.1);
+}
+
+.review-card:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(143, 157, 131, 0.25),
+    0 6px 14px rgba(120, 90, 60, 0.08);
+}
+
+.review-sound-icon {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+
+  color: #8f9d83;
+  font-size: 14px;
+  line-height: 1;
 }
 
 .review-kana {

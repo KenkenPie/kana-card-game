@@ -2,20 +2,27 @@
 import { ref } from "vue";
 import StageSelect from "./StageSelect.vue";
 import QuizBoard from "./QuizBoard.vue";
+import QuestionCountSelect from "../common/QuestionCountSelect.vue";
 import { unlockAudio } from "../../utils/audio.js";
+import { kanaData } from "../../data/kanaData.js";
 
 
 
 const gameState = ref("select");
 const selectedStage = ref(null);
+const selectedQuestionCount = ref(10);
 const gameKey = ref(0);
 const emit = defineEmits(["back"]);
 
 
-async function startGame(stage) {
-  unlockAudio();
-
+function chooseStage(stage) {
   selectedStage.value = stage;
+  selectedQuestionCount.value = 10;
+  gameState.value = "count";
+}
+
+function startGame() {
+  unlockAudio();
   gameState.value = "playing";
 }
 
@@ -27,6 +34,7 @@ function backToStageSelect() {
   gameState.value = "select";
   selectedStage.value = null;
 }
+
 </script>
 
 <template>
@@ -34,14 +42,24 @@ function backToStageSelect() {
     <div class="game-shell">
       <StageSelect
         v-if="gameState === 'select'"
-        @start="startGame"
+        @start="chooseStage"
         @back="emit('back')"
+      />
+
+      <QuestionCountSelect
+        v-else-if="gameState === 'count'"
+        v-model="selectedQuestionCount"
+        :stage="selectedStage"
+        :available-count="kanaData.length"
+        @start="startGame"
+        @back="backToStageSelect"
       />
 
       <QuizBoard
         v-else
         :key="gameKey"
         :stage="selectedStage"
+        :question-count="selectedQuestionCount"
         @restart="restartGame"
         @back="backToStageSelect"
         @home="emit('back')"

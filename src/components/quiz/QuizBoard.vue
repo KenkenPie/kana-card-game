@@ -20,16 +20,15 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  questionCount: {
+    type: Number,
+    default: 10,
+  },
 });
 
 // 傳送事件給 QuizGame
 // ==============================
 const emit = defineEmits(["restart", "back", "home"]);
-
-// ==============================
-// 遊戲基本設定
-// ==============================
-const QUESTION_COUNT = 10;
 
 // ==============================
 // 題目與分數狀態
@@ -57,7 +56,9 @@ const wrongQuestions = ref([]);
 // 從 kanaData 隨機抽出指定題數
 // ==============================
 const quizQuestions = ref(
-  [...kanaData].sort(() => Math.random() - 0.5).slice(0, QUESTION_COUNT),
+  [...kanaData]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, Math.min(props.questionCount, kanaData.length)),
 );
 
 // ==============================
@@ -110,26 +111,33 @@ const progressPercent = computed(() => {
 // 正確率
 // 結算畫面使用
 // ==============================
+const accuracyRate = computed(() => {
+  if (quizQuestions.value.length === 0) return 0;
+
+  return (correctCount.value / quizQuestions.value.length) * 100;
+});
+
 const accuracy = computed(() => {
-  return Math.round((correctCount.value / quizQuestions.value.length) * 100);
+  return Math.round(accuracyRate.value);
 });
 
 // ==============================
 // 結算評語
 // ==============================
 const resultMessage = computed(() => {
-  if (accuracy.value === 100) return "完美！五十音小天才 🌸";
-  if (accuracy.value >= 80) return "很棒！已經很熟了 ✨";
-  if (accuracy.value >= 60) return "不錯！再練一下會更穩 💪";
-  return "慢慢來，多玩幾次就會記住!";
+  if (accuracyRate.value === 100) return "太厲害了！全部答對 🎉";
+  if (accuracyRate.value >= 80) return "很棒！常用單字已經很熟了 ✨";
+  if (accuracyRate.value >= 60) return "表現不錯，再複習一下就更穩了 🌱";
+  if (accuracyRate.value >= 40) return "已經掌握一部分了，繼續加油 💪";
+  return "沒關係，從錯題慢慢複習吧 📖";
 });
 
 // ==============================
 // 結算星等
 // ==============================
 const resultStars = computed(() => {
-  if (accuracy.value === 100) return "⭐⭐⭐";
-  if (accuracy.value >= 70) return "⭐⭐";
+  if (accuracyRate.value === 100) return "⭐⭐⭐";
+  if (accuracyRate.value >= 70) return "⭐⭐";
   return "⭐";
 });
 

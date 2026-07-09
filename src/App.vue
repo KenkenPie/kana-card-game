@@ -28,7 +28,7 @@ function backToHome() {
             class="game-card"
             @click="openGame('kana')"
           >
-            <h2>Kana Card</h2>
+            <h2>五十音練習</h2>
             <p>練習平假名、片假名與羅馬拼音</p>
           </button>
 
@@ -37,7 +37,7 @@ function backToHome() {
             class="game-card"
             @click="openGame('vocab')"
           >
-            <h2>Vocabulary</h2>
+            <h2>單字練習</h2>
             <p>看假名，選出正確的中文意思</p>
           </button>
         </div>

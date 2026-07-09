@@ -2,7 +2,10 @@
 import { ref } from "vue";
 import VocabStageSelect from "./VocabStageSelect.vue";
 import VocabBoard from "./VocabBoard.vue";
+import QuestionCountSelect from "../common/QuestionCountSelect.vue";
 import { unlockAudio } from "../../utils/audio.js";
+import { n5Words } from "../../data/n5Words.js";
+import n4Words from "../../data/n4Words.js";
 
 // ==============================
 // 傳送返回事件給 App.vue
@@ -22,6 +25,7 @@ const gameState = ref("select");
 // 目前雖然只有一種，但保留欄位方便未來擴充
 // ==============================
 const selectedStage = ref(null);
+const selectedQuestionCount = ref(10);
 
 // ==============================
 // 用來重新建立 VocabBoard
@@ -33,8 +37,21 @@ const gameKey = ref(0);
 // 開始單字遊戲
 // ==============================
 function startGame(stage) {
-  unlockAudio();
   selectedStage.value = stage;
+  selectedQuestionCount.value = 10;
+  gameState.value = "count";
+}
+
+function getAvailableQuestionCount(stage) {
+  if (stage?.level === "N4" || stage?.id?.startsWith("n4")) {
+    return n4Words.length;
+  }
+
+  return n5Words.length;
+}
+
+function startPlaying() {
+  unlockAudio();
   gameState.value = "playing";
 }
 
@@ -73,6 +90,15 @@ function backToHome() {
         @back="backToHome"
       />
 
+      <QuestionCountSelect
+        v-else-if="gameState === 'count'"
+        v-model="selectedQuestionCount"
+        :stage="selectedStage"
+        :available-count="getAvailableQuestionCount(selectedStage)"
+        @start="startPlaying"
+        @back="backToStageSelect"
+      />
+
       <!-- ==============================
            單字遊戲畫面
       ============================== -->
@@ -80,6 +106,7 @@ function backToHome() {
         v-else
         :key="gameKey"
         :stage="selectedStage"
+        :question-count="selectedQuestionCount"
         @restart="restartGame"
         @back="backToStageSelect"
         @home="backToHome"
