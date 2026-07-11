@@ -1,5 +1,9 @@
 <script setup>
 const QUESTION_COUNT_OPTIONS = [10, 20, 30];
+const QUESTION_RANGE_OPTIONS = [
+  { value: "basic", label: "基礎五十音" },
+  { value: "all", label: "包含進階音" },
+];
 
 const props = defineProps({
   stage: {
@@ -14,9 +18,17 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  showRange: {
+    type: Boolean,
+    default: false,
+  },
+  range: {
+    type: String,
+    default: "basic",
+  },
 });
 
-const emit = defineEmits(["update:modelValue", "start", "back"]);
+const emit = defineEmits(["update:modelValue", "update:range", "start", "back"]);
 </script>
 
 <template>
@@ -45,6 +57,23 @@ const emit = defineEmits(["update:modelValue", "start", "back"]);
       >
         {{ count }} 題
       </button>
+    </div>
+
+    <div v-if="showRange" class="range-section">
+      <h2>題目範圍</h2>
+      <div class="range-options" role="radiogroup" aria-label="選擇題目範圍">
+        <button
+          v-for="option in QUESTION_RANGE_OPTIONS"
+          :key="option.value"
+          type="button"
+          class="count-option range-option"
+          :class="{ selected: range === option.value }"
+          :aria-pressed="range === option.value"
+          @click="emit('update:range', option.value)"
+        >
+          {{ option.label }}
+        </button>
+      </div>
     </div>
 
     <button
@@ -118,6 +147,27 @@ const emit = defineEmits(["update:modelValue", "start", "back"]);
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
+}
+
+.range-section {
+  margin-top: 22px;
+}
+
+.range-section h2 {
+  margin: 0 0 12px;
+  color: #5f4b3b;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.range-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.range-option {
+  width: 100%;
 }
 
 .count-option {
@@ -210,6 +260,16 @@ const emit = defineEmits(["update:modelValue", "start", "back"]);
   .count-option {
     min-height: 52px;
     font-size: 16px;
+  }
+
+
+  .range-options {
+    gap: 10px;
+  }
+
+  .range-option {
+    padding-inline: 8px;
+    font-size: 15px;
   }
 }
 </style>

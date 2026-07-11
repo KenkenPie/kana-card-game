@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import StageSelect from "./StageSelect.vue";
 import QuizBoard from "./QuizBoard.vue";
 import QuestionCountSelect from "../common/QuestionCountSelect.vue";
@@ -11,15 +11,31 @@ import { kanaData } from "../../data/kanaData.js";
 const gameState = ref("select");
 const selectedStage = ref(null);
 const selectedQuestionCount = ref(10);
+const selectedQuestionRange = ref("basic");
 const gameKey = ref(0);
 const emit = defineEmits(["back"]);
 
 
 function chooseStage(stage) {
   selectedStage.value = stage;
+  // 與原本題數的狀態管理方式一致：每次選擇關卡時回到預設設定。
   selectedQuestionCount.value = 10;
+  selectedQuestionRange.value = "basic";
   gameState.value = "count";
 }
+
+// 先依關卡保留具有對應假名的資料，再依題目範圍計算可用題數。
+const availableKana = computed(() => {
+  const stageFiltered = kanaData.filter((kana) => {
+    if (selectedStage.value?.id === "hiragana") return Boolean(kana.hiragana);
+    if (selectedStage.value?.id === "katakana") return Boolean(kana.katakana);
+    return Boolean(kana.hiragana && kana.katakana);
+  });
+
+  return selectedQuestionRange.value === "basic"
+    ? stageFiltered.filter((kana) => kana.category === "basic")
+    : stageFiltered;
+});
 
 function startGame() {
   unlockAudio();
@@ -49,8 +65,10 @@ function backToStageSelect() {
       <QuestionCountSelect
         v-else-if="gameState === 'count'"
         v-model="selectedQuestionCount"
+        v-model:range="selectedQuestionRange"
         :stage="selectedStage"
-        :available-count="kanaData.length"
+        :available-count="availableKana.length"
+        show-range
         @start="startGame"
         @back="backToStageSelect"
       />
@@ -60,6 +78,7 @@ function backToStageSelect() {
         :key="gameKey"
         :stage="selectedStage"
         :question-count="selectedQuestionCount"
+        :question-range="selectedQuestionRange"
         @restart="restartGame"
         @back="backToStageSelect"
         @home="emit('back')"

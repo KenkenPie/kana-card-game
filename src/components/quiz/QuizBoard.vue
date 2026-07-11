@@ -24,6 +24,10 @@ const props = defineProps({
     type: Number,
     default: 10,
   },
+  questionRange: {
+    type: String,
+    default: "basic",
+  },
 });
 
 // 傳送事件給 QuizGame
@@ -52,14 +56,25 @@ const isAnswered = ref(false);
 const wrongQuestions = ref([]);
 
 // ==============================
-// 建立本輪題目
-// 從 kanaData 隨機抽出指定題數
-// ==============================
-const quizQuestions = ref(
-  [...kanaData]
+// 建立題目時依序處理：關卡字形 → 題目範圍 → 洗牌 → 截取題數。
+// slice 在題庫不足時會直接使用全部資料，不會補入 undefined 或重複題目。
+function createQuizQuestions() {
+  const stageFiltered = kanaData.filter((kana) => {
+    if (props.stage.id === "hiragana") return Boolean(kana.hiragana);
+    if (props.stage.id === "katakana") return Boolean(kana.katakana);
+    return Boolean(kana.hiragana && kana.katakana);
+  });
+
+  const rangeFiltered = props.questionRange === "basic"
+    ? stageFiltered.filter((kana) => kana.category === "basic")
+    : stageFiltered;
+
+  return [...rangeFiltered]
     .sort(() => Math.random() - 0.5)
-    .slice(0, Math.min(props.questionCount, kanaData.length)),
-);
+    .slice(0, props.questionCount);
+}
+
+const quizQuestions = ref(createQuizQuestions());
 
 // ==============================
 // 目前題目
