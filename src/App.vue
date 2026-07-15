@@ -130,8 +130,11 @@ function backToHome() {
 .home-screen h1 {
   margin: 0;
 
+  font-family: var(--font-serif-jp);
   font-size: 48px;
-  font-weight: 900;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
   color: #5f4b3b;
 }
 
@@ -139,7 +142,10 @@ function backToHome() {
   margin: 10px 0 36px;
 
   font-size: 18px;
-  font-weight: 700;
+  font-family: var(--font-sans-jp);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
   color: #8a7766;
 }
 
@@ -162,6 +168,7 @@ function backToHome() {
   color: #5f4b3b;
 
   text-align: left;
+  font-family: var(--font-sans-jp);
   cursor: pointer;
 
   box-shadow: 0 12px 30px rgba(120, 90, 60, 0.12);
@@ -177,7 +184,11 @@ function backToHome() {
 .game-card h2 {
   margin: 0 0 8px;
 
+  font-family: var(--font-serif-jp);
   font-size: 28px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  line-height: 1.4;
   color: #5f4b3b;
 }
 
@@ -185,7 +196,9 @@ function backToHome() {
   margin: 0;
 
   font-size: 15px;
-  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.75;
   color: #7d6d5f;
 }
 

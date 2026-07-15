@@ -53,6 +53,7 @@ defineProps({
   border: 2px solid rgba(234, 223, 206, 0.9);
   border-radius: 22px;
   color: #5f4b3b;
+  font-family: var(--font-sans-jp);
   text-align: left;
 
   box-shadow: 0 8px 22px rgba(120, 90, 60, 0.08);
@@ -85,7 +86,8 @@ defineProps({
   color: #56634d;
 
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 .proverb-body {
@@ -96,9 +98,11 @@ defineProps({
 .proverb-japanese {
   margin: 0;
 
+  font-family: var(--font-serif-jp);
   color: #5f4b3b;
   font-size: 30px;
-  font-weight: 900;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   line-height: 1.35;
 
   overflow-wrap: anywhere;
@@ -109,8 +113,9 @@ defineProps({
 
   color: #8a7766;
   font-size: 16px;
-  font-weight: 800;
-  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.7;
 
   overflow-wrap: anywhere;
 }
@@ -118,10 +123,12 @@ defineProps({
 .proverb-meaning {
   margin: 0;
 
+  font-family: var(--font-serif-jp);
   color: #7c6047;
   font-size: 18px;
-  font-weight: 900;
-  line-height: 1.65;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  line-height: 1.7;
 }
 
 .proverb-explanation {
@@ -129,8 +136,9 @@ defineProps({
 
   color: #8a7766;
   font-size: 15px;
-  font-weight: 700;
-  line-height: 1.7;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.75;
 }
 
 @media (max-width: 480px) {

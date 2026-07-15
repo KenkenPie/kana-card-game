@@ -26,7 +26,7 @@ function chooseStage(stage) {
 
 <template>
   <section class="stage-select">
-    <h1>Kana Card</h1>
+    <h1>五十音練習</h1>
     <p class="subtitle">選擇練習關卡</p>
 
     <div class="stage-list">
